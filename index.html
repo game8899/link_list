@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Link</title>
+    <link rel="stylesheet" href="./css/index.css">
+    <script src="./js/vue3.js"></script>
+</head>
+<body>
+    <div id="app">
+        <div class="content">
+            <img class="logo" src="./img/logo.png" alt="">
+            <div class="link-box">
+                <img src="./img/tip.png" class="tip" alt="">
+                <img src="./img/san.png" class="san">
+                <div class="link-item" v-for="(item, i) in linkList" :key="i">
+                    <span class="link">{{ item.link }}</span>
+                    <img class="click copy" src="./img/copy.png" @click="handleCopy(item.link)">
+                </div>
+            </div>
+            <div class="bottom">
+                <div class="line"></div>
+                <div class="txt">手动输入访问</div>
+                <div class="line"></div>
+            </div>
+        </div>
+        <div class="ab-tips" :class="{show: showTips}">{{ tip }}</div>
+    </div>
+    <script>
+        const { createApp, ref } = Vue
+        createApp({
+            setup() {
+                const tip = ref('复制成功')
+                const showTips = ref(false)
+                const linkList = [
+                    { link: '123456.cc' },
+                    { link: '123456.cc' },
+                    { link: '123456.cc' },
+                ]
+                let timer
+                const tipFn = (txt) => {
+                    tip.value = txt
+                    showTips.value = true
+                    if (timer) clearTimeout(timer)
+                    timer = setTimeout(() => {
+                        showTips.value = false
+                        timer = null
+                    }, 1500)
+                }
+                const copy = (text) => {
+                    if (navigator.clipboard) {
+                        navigator.clipboard.writeText(text)
+                    } else {
+                        const textarea = document.createElement('textarea')
+                        document.body.appendChild(textarea)
+                        textarea.style.position = 'fixed'
+                        textarea.style.clip = 'rect(0 0 0 0)'
+                        textarea.style.top = '10px'
+                        textarea.value = text
+                        textarea.select()
+                        document.execCommand('copy', true)
+                        document.body.removeChild(textarea)
+                    }
+                }
+                const handleCopy = (v) => {
+                    copy(v)
+                    tipFn('复制成功')
+                }
+                return {
+                    linkList,
+                    tip,
+                    showTips,
+                    handleCopy
+                }
+            }
+        }).mount('#app')
+    </script>
+</body>
+</html>
